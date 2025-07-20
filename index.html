@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jadwal Piket Kelas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%2381b29a' fill-opacity='0.1' d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z'/%3E%3C/svg%3E");
+        }
+        
+        .main-container {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        
+        .day-header {
+            background: linear-gradient(to right, #3b8d6a, #4ca886);
+            color: white;
+            border-radius: 10px 10px 0 0;
+        }
+        
+        .day-card {
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            background: linear-gradient(to bottom, #ffffff, #f9f9f9);
+            border: 1px solid #e0e0e0;
+        }
+        
+        .day-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .active-day {
+            border: 2px solid #3b8d6a;
+            background: linear-gradient(to bottom, #f0f9f4, #e6f5ed);
+        }
+        
+        .person-item {
+            border-left: 3px solid transparent;
+            transition: all 0.2s ease;
+        }
+        
+        .person-item:hover {
+            background-color: #f0f9f4;
+            border-left-color: #3b8d6a;
+        }
+        
+        .mopping-duty {
+            background-color: #e6f5ed;
+            border-left: 3px solid #3b8d6a;
+        }
+        
+        .leaf-icon {
+            color: #3b8d6a;
+        }
+        
+        .header-decoration {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            height: 30px;
+            background-color: #4ca886;
+            border-radius: 50% 50% 0 0;
+            z-index: -1;
+        }
+        
+        .note-container {
+            background: linear-gradient(135deg, #f9f9d9 0%, #f5f5c5 100%);
+            border-left: 4px solid #d4ac0d;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-fadeIn {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        
+        .today-indicator {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background-color: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .calendar-input {
+            background-color: #f0f9f4;
+            border: 2px solid #3b8d6a;
+            border-radius: 10px;
+            padding: 12px 20px;
+            font-size: 16px;
+            width: 100%;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .calendar-input:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(59, 141, 106, 0.3);
+        }
+        
+        .flatpickr-calendar {
+            border-radius: 15px !important;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+            border: none !important;
+            font-family: 'Poppins', sans-serif !important;
+        }
+        
+        .flatpickr-day.selected {
+            background: #3b8d6a !important;
+            border-color: #3b8d6a !important;
+        }
+        
+        .flatpickr-day:hover {
+            background: #e6f5ed !important;
+            border-color: #3b8d6a !important;
+            color: #3b8d6a !important;
+        }
+        
+        .flatpickr-months .flatpickr-month {
+            background: #3b8d6a !important;
+            color: white !important;
+        }
+        
+        .flatpickr-current-month .flatpickr-monthDropdown-months {
+            color: white !important;
+        }
+        
+        .flatpickr-weekdays {
+            background: #3b8d6a !important;
+        }
+        
+        span.flatpickr-weekday {
+            color: white !important;
+            font-weight: 600 !important;
+        }
+        
+        .flatpickr-months .flatpickr-prev-month, 
+        .flatpickr-months .flatpickr-next-month {
+            fill: white !important;
+        }
+        
+        .duty-result {
+            transition: all 0.3s ease;
+        }
+        
+        .duty-result.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .duty-result.hide {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        .calendar-container {
+            position: relative;
+            z-index: 10;
+        }
+        
+        .leaf-decoration {
+            position: absolute;
+            z-index: -1;
+            opacity: 0.2;
+        }
+        
+        .leaf-1 {
+            top: -50px;
+            right: -30px;
+            transform: rotate(45deg);
+        }
+        
+        .leaf-2 {
+            bottom: -40px;
+            left: -20px;
+            transform: rotate(-15deg);
+        }
+        
+        .btn {
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .month-view-btn {
+            background-color: #3b8d6a;
+            color: white;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .month-view-btn:hover {
+            background-color: #2c6a50;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+        
+        .month-view-btn:active {
+            transform: translateY(0);
+        }
+        
+        .month-view {
+            display: none;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-top: 20px;
+        }
+        
+        .month-day {
+            background-color: white;
+            border-radius: 8px;
+            padding: 8px;
+            min-height: 80px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            position: relative;
+            transition: all 0.2s ease;
+        }
+        
+        .month-day:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        .month-day-header {
+            font-weight: 600;
+            text-align: center;
+            padding: 5px;
+            background-color: #f0f9f4;
+            border-radius: 5px;
+            margin-bottom: 5px;
+        }
+        
+        .month-day-number {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            border-radius: 50%;
+        }
+        
+        .month-day.today {
+            border: 2px solid #3b8d6a;
+        }
+        
+        .month-day.today .month-day-number {
+            background-color: #3b8d6a;
+            color: white;
+        }
+        
+        .month-day.other-month {
+            opacity: 0.5;
+        }
+        
+        .month-day-duty {
+            font-size: 10px;
+            margin-top: 25px;
+            text-align: center;
+        }
+        
+        .month-day-mopper {
+            background-color: #e6f5ed;
+            border-left: 2px solid #3b8d6a;
+            padding: 2px 4px;
+            font-size: 10px;
+            margin-top: 5px;
+            text-align: center;
+            border-radius: 3px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body class="min-h-screen py-8 px-4 sm:px-6 lg:px-8 flex flex-col items-center">
+    <div class="main-container w-full max-w-6xl p-6 my-8 relative">
+        <div class="header-decoration"></div>
+        
+        <div class="text-center mb-8 relative">
+            <div class="absolute -top-6 left-0 w-full flex justify-center">
+                <svg class="w-12 h-12 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2-1a1 1 0 00-1 1v12a1 1 0 001 1h8a1 1 0 001-1V4a1 1 0 00-1-1H6z" clip-rule="evenodd"></path>
+                    <path d="M8 7a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1zm0 4a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"></path>
+                </svg>
+            </div>
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-800 mt-4">Jadwal Piket Kelas</h1>
+            <p class="text-gray-600 mt-2">Pilih tanggal untuk melihat siapa yang bertugas piket</p>
+        </div>
+        
+        <div class="calendar-container relative mb-8">
+            <!-- Leaf decorations -->
+            <div class="leaf-decoration leaf-1">
+                <svg class="w-32 h-32 text-green-600" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M17.75,4.09L15.22,6.03L16.13,9.09L13.5,7.28L10.87,9.09L11.78,6.03L9.25,4.09L12.44,4L13.5,1L14.56,4L17.75,4.09M21.25,11L19.61,12.25L20.2,14.23L18.5,13.06L16.8,14.23L17.39,12.25L15.75,11L17.81,10.95L18.5,9L19.19,10.95L21.25,11M18.97,15.95C19.8,15.87 20.69,17.05 20.16,17.8C19.84,18.25 19.5,18.67 19.08,19.07C15.17,23 8.84,23 4.94,19.07C1.03,15.17 1.03,8.83 4.94,4.93C5.34,4.53 5.76,4.17 6.21,3.85C6.96,3.32 8.14,4.21 8.06,5.04C7.79,7.9 8.75,10.87 10.95,13.06C13.14,15.26 16.1,16.22 18.97,15.95M17.33,17.97C14.5,17.81 11.7,16.64 9.53,14.5C7.36,12.31 6.2,9.5 6.04,6.68C3.23,9.82 3.34,14.64 6.35,17.66C9.37,20.67 14.19,20.78 17.33,17.97Z" />
+                </svg>
+            </div>
+            <div class="leaf-decoration leaf-2">
+                <svg class="w-24 h-24 text-green-600" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M17.75,4.09L15.22,6.03L16.13,9.09L13.5,7.28L10.87,9.09L11.78,6.03L9.25,4.09L12.44,4L13.5,1L14.56,4L17.75,4.09M21.25,11L19.61,12.25L20.2,14.23L18.5,13.06L16.8,14.23L17.39,12.25L15.75,11L17.81,10.95L18.5,9L19.19,10.95L21.25,11M18.97,15.95C19.8,15.87 20.69,17.05 20.16,17.8C19.84,18.25 19.5,18.67 19.08,19.07C15.17,23 8.84,23 4.94,19.07C1.03,15.17 1.03,8.83 4.94,4.93C5.34,4.53 5.76,4.17 6.21,3.85C6.96,3.32 8.14,4.21 8.06,5.04C7.79,7.9 8.75,10.87 10.95,13.06C13.14,15.26 16.1,16.22 18.97,15.95M17.33,17.97C14.5,17.81 11.7,16.64 9.53,14.5C7.36,12.31 6.2,9.5 6.04,6.68C3.23,9.82 3.34,14.64 6.35,17.66C9.37,20.67 14.19,20.78 17.33,17.97Z" />
+                </svg>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg p-6 relative">
+                <div class="flex flex-col md:flex-row md:items-center md:space-x-4">
+                    <div class="flex-1 mb-4 md:mb-0">
+                        <label for="date-picker" class="block text-sm font-medium text-gray-700 mb-2">Pilih Tanggal</label>
+                        <input type="text" id="date-picker" class="calendar-input" placeholder="Klik untuk memilih tanggal">
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Hari Terpilih</label>
+                        <div class="bg-gray-100 rounded-lg p-3 flex items-center">
+                            <svg class="w-6 h-6 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span id="selected-date" class="font-medium text-gray-800">Belum ada tanggal yang dipilih</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4 flex justify-center">
+                    <button id="today-btn" class="btn bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow-md flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path>
+                        </svg>
+                        Hari Ini
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="duty-result" class="duty-result hide">
+            <div class="day-card relative mb-8">
+                <div class="day-header p-3 text-center">
+                    <h3 id="selected-day-name" class="text-lg font-semibold">Hari Terpilih</h3>
+                </div>
+                <div class="p-6">
+                    <h4 class="text-lg font-medium text-gray-800 mb-4 flex items-center">
+                        <svg class="w-6 h-6 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"></path>
+                        </svg>
+                        Petugas Piket:
+                    </h4>
+                    <ul id="duty-list" class="space-y-3">
+                        <!-- Duty list will be populated here -->
+                    </ul>
+                    
+                    <div class="mt-6 pt-4 border-t border-gray-200">
+                        <div class="flex items-center">
+                            <svg class="w-6 h-6 text-yellow-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                            </svg>
+                            <h4 class="text-lg font-medium text-gray-800">Yang Bertugas Mengepel:</h4>
+                        </div>
+                        <div class="mt-2 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-md">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                <div class="ml-3">
+                                    <p id="mopping-duty" class="text-sm text-yellow-700 font-medium">
+                                        Belum ada yang ditugaskan
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="note-container p-4 rounded-lg shadow-md relative animate-fadeIn">
+            <div class="absolute -top-3 -left-3">
+                <svg class="w-8 h-8 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-yellow-800 mb-2">Catatan Penting:</h3>
+            <p class="text-yellow-900">Setiap anak yang piket pada hari tersebut <span class="font-bold">WAJIB MEMBERSIHKAN KELAS</span>. Giliran untuk yang mengepel bergantian setiap hari sesuai dengan urutan nama.</p>
+            <div class="mt-4 bg-white bg-opacity-50 p-3 rounded-lg border border-yellow-200">
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"></path>
+                    </svg>
+                    <p class="text-yellow-800 font-medium">Nama yang ditampilkan dengan <span class="bg-green-600 text-white px-2 py-0.5 rounded text-xs">latar hijau</span> adalah petugas yang mengepel pada hari tersebut.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Define the duty schedule
+            const dutySchedule = {
+                1: { // Monday
+                    name: 'Senin',
+                    people: ['Amora', 'Avika', 'Frans', 'Hans', 'Jhon']
+                },
+                2: { // Tuesday
+                    name: 'Selasa',
+                    people: ['Aurelia', 'Edward', 'Faustin', 'Kasih', 'Haris', 'Leonyta']
+                },
+                3: { // Wednesday
+                    name: 'Rabu',
+                    people: ['Joseph', 'Matthew', 'Melany', 'Mentari', 'William']
+                },
+                4: { // Thursday
+                    name: 'Kamis',
+                    people: ['Michael', 'Michelle', 'Rafael', 'Revytania', 'Valencio', 'Yohana']
+                },
+                5: { // Friday
+                    name: 'Jumat',
+                    people: ['Owen', 'Tasya', 'Widya', 'Erna', 'Gracia']
+                }
+            };
+            
+            // Create a reference date to start the rotation (e.g., January 1, 2023)
+            const referenceDate = new Date(2023, 0, 1); // January 1, 2023
+            
+            // Initialize flatpickr
+            const datePicker = flatpickr("#date-picker", {
+                locale: "id",
+                dateFormat: "d F Y",
+                disableMobile: true,
+                enableTime: false,
+                onChange: function(selectedDates, dateStr) {
+                    updateDutySchedule(selectedDates[0]);
+                }
+            });
+            
+            // Set initial date to today
+            datePicker.setDate(new Date());
+            
+            // Today button
+            document.getElementById('today-btn').addEventListener('click', function() {
+                datePicker.setDate(new Date());
+            });
+            
+            // Function to calculate the number of weekdays between two dates
+            function getWeekdaysBetweenDates(startDate, endDate) {
+                let count = {
+                    1: 0, // Monday
+                    2: 0, // Tuesday
+                    3: 0, // Wednesday
+                    4: 0, // Thursday
+                    5: 0  // Friday
+                };
+                
+                const currentDate = new Date(startDate);
+                
+                while (currentDate <= endDate) {
+                    const dayOfWeek = currentDate.getDay();
+                    if (dayOfWeek >= 1 && dayOfWeek <= 5) {
+                        count[dayOfWeek]++;
+                    }
+                    currentDate.setDate(currentDate.getDate() + 1);
+                }
+                
+                return count;
+            }
+            
+            // Function to get the mopping person for a specific date
+            function getMoppingPerson(date, dayOfWeek) {
+                // Get the weekday counts from reference date to the day before the selected date
+                const weekdayCounts = getWeekdaysBetweenDates(referenceDate, new Date(date.getTime() - 86400000)); // Subtract one day
+                
+                // Calculate the rotation index for the specific day of week
+                const rotationIndex = weekdayCounts[dayOfWeek] % dutySchedule[dayOfWeek].people.length;
+                
+                return dutySchedule[dayOfWeek].people[rotationIndex];
+            }
+            
+            function updateDutySchedule(date) {
+                const dayOfWeek = date.getDay(); // 0 is Sunday, 1 is Monday, etc.
+                const formattedDate = date.toLocaleDateString('id-ID', { 
+                    weekday: 'long', 
+                    day: 'numeric', 
+                    month: 'long', 
+                    year: 'numeric' 
+                });
+                
+                document.getElementById('selected-date').textContent = formattedDate;
+                
+                // Check if it's a weekday (Monday to Friday)
+                if (dayOfWeek >= 1 && dayOfWeek <= 5) {
+                    const daySchedule = dutySchedule[dayOfWeek];
+                    
+                    // Update day name
+                    document.getElementById('selected-day-name').textContent = daySchedule.name;
+                    
+                    // Clear previous duty list
+                    const dutyList = document.getElementById('duty-list');
+                    dutyList.innerHTML = '';
+                    
+                    // Get the person on mopping duty
+                    const moppingPerson = getMoppingPerson(date, dayOfWeek);
+                    
+                    // Add people to duty list
+                    daySchedule.people.forEach((person, index) => {
+                        const li = document.createElement('li');
+                        li.className = 'person-item p-3 rounded bg-white shadow-sm';
+                        if (person === moppingPerson) {
+                            li.className += ' mopping-duty';
+                        }
+                        
+                        li.innerHTML = `
+                            <div class="flex justify-between items-center">
+                                <span>${index + 1}. ${person}</span>
+                                <svg class="w-5 h-5 leaf-icon" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                        `;
+                        dutyList.appendChild(li);
+                    });
+                    
+                    // Update mopping duty
+                    document.getElementById('mopping-duty').textContent = `${moppingPerson} (Urutan ke-${daySchedule.people.indexOf(moppingPerson) + 1})`;
+                    
+                    // Show duty result
+                    const dutyResult = document.getElementById('duty-result');
+                    dutyResult.classList.remove('hide');
+                    dutyResult.classList.add('show');
+                } else {
+                    // It's a weekend
+                    document.getElementById('selected-day-name').textContent = 'Akhir Pekan';
+                    document.getElementById('duty-list').innerHTML = `
+                        <li class="p-4 bg-gray-50 rounded text-center">
+                            <span class="text-gray-500">Tidak ada jadwal piket di hari Sabtu dan Minggu</span>
+                        </li>
+                    `;
+                    document.getElementById('mopping-duty').textContent = 'Tidak ada jadwal piket (Akhir Pekan)';
+                    
+                    // Show duty result
+                    const dutyResult = document.getElementById('duty-result');
+                    dutyResult.classList.remove('hide');
+                    dutyResult.classList.add('show');
+                }
+            }
+            
+            // Initialize with today's date
+            updateDutySchedule(new Date());
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'962158bd146afb86',t:'MTc1MzAwMjg0OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
